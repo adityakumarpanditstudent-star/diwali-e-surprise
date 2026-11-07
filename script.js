@@ -170,7 +170,13 @@
         state.isRecipient = true; // Locks into recipient view-only mode!
       }
       if (fromVal && fromVal.trim()) state.sender = fromVal.trim();
-      if (msgVal && msgVal.trim()) state.message = decodeURIComponent(msgVal.trim());
+      if (msgVal && msgVal.trim()) {
+        try {
+          state.message = decodeURIComponent(msgVal.trim());
+        } catch (_) {
+          state.message = msgVal.trim();
+        }
+      }
       if (themeVal && RANGOLI_THEMES[themeVal]) state.wishesTheme = themeVal;
       if (cardThemeVal) state.cardTheme = cardThemeVal;
       if (modeVal === 'recipient' || modeVal === 'view') state.isRecipient = true;
@@ -258,6 +264,7 @@
   }
 
   function startAudioOnGesture() {
+    getAudioCtx();
     if (!bgAudio || !state.soundEnabled) return;
     if (bgAudio.paused) {
       bgAudio.play().catch(() => {});
@@ -379,6 +386,7 @@
   let rangoliPerimeterDiyas = [];
   let animatedDecorations = [];
   let ambientLightRef = null;
+  let hemiLightRef = null;
 
   // Cinematic Walking Interpolation System
   let isCameraWalking = false;
@@ -431,6 +439,9 @@
 
     ambientLightRef = new THREE.AmbientLight(0x180A28, 0.12);
     scene.add(ambientLightRef);
+
+    hemiLightRef = new THREE.HemisphereLight(0xFFE082, 0x1A0933, 0.12);
+    scene.add(hemiLightRef);
 
     const moonLight = new THREE.DirectionalLight(0x5A4A88, 0.2);
     moonLight.position.set(5, 20, 10);
@@ -1731,8 +1742,8 @@
         goToStep(1);
       });
 
-      const archSubHint = document.getElementById('archSubHint');
-      if (archSubHint) archSubHint.textContent = 'The gali is full of light ✨';
+      const card1Inst = document.getElementById('card1Instruction');
+      if (card1Inst) card1Inst.textContent = 'The entire gali is illuminated with festive light! ✨';
     }, waveDuration + 400);
   }
 
@@ -2715,7 +2726,7 @@
     const url = new URL(window.location.origin + window.location.pathname);
     url.searchParams.set('to', state.recipient);
     url.searchParams.set('from', state.sender);
-    url.searchParams.set('msg', encodeURIComponent(state.message));
+    url.searchParams.set('msg', state.message);
     url.searchParams.set('theme', state.wishesTheme);
     url.searchParams.set('cardTheme', state.cardTheme);
     url.searchParams.set('music', state.activeMusicTrack.toString());
@@ -2758,10 +2769,6 @@
       if (el) el.textContent = val;
     };
 
-    setText('archRecipient', state.recipient);
-    setText('archSender', `with love, ${state.sender}`);
-    setText('archSubIntro', `${state.sender} made you a little gali`);
-    setText('card1Recipient', state.recipient);
     setText('card4Recipient', state.recipient);
     setText('card4Sender', `with love, ${state.sender}`);
 
@@ -2812,9 +2819,13 @@
       startAudioOnGesture();
       window.removeEventListener('click', onFirstUserGesture);
       window.removeEventListener('touchstart', onFirstUserGesture);
+      window.removeEventListener('pointerdown', onFirstUserGesture);
+      window.removeEventListener('keydown', onFirstUserGesture);
     };
     window.addEventListener('click', onFirstUserGesture);
     window.addEventListener('touchstart', onFirstUserGesture);
+    window.addEventListener('pointerdown', onFirstUserGesture);
+    window.addEventListener('keydown', onFirstUserGesture);
   }
 
   if (document.readyState === 'loading') {

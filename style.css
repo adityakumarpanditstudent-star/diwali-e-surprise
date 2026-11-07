@@ -907,8 +907,6 @@ html, body {
   border: 1px solid rgba(255, 183, 3, 0.25);
   backdrop-filter: blur(6px);
 }
-  margin-top: 2px;
-}
 
 .rooftop-actions-card {
   display: flex;
@@ -920,7 +918,6 @@ html, body {
   pointer-events: auto;
   margin-bottom: 0;
   animation: cardFadeIn 0.8s ease both;
-}
 }
 
 .rooftop-main-buttons {
