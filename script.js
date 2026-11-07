@@ -203,8 +203,30 @@
     if (!bgAudio) return;
 
     bgAudio.volume = 0.65;
-    setAudioTrack(state.activeMusicTrack, false);
+
+    // Synchronize UI whenever audio starts playing or pauses
+    bgAudio.addEventListener('play', () => updateSoundIconState(true));
+    bgAudio.addEventListener('pause', () => updateSoundIconState(!bgAudio.paused));
+
+    // Initialize track with autoplay enabled
+    setAudioTrack(state.activeMusicTrack, true);
     updateMusicDropdownUI();
+
+    // Directly attempt autoplay on page load
+    attemptAutoplay();
+  }
+
+  function attemptAutoplay() {
+    if (!bgAudio || !state.soundEnabled) return;
+    const playPromise = bgAudio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        updateSoundIconState(true);
+      }).catch(() => {
+        // Browser requires a user touch/gesture: will auto-unlock on ANY initial touch/drag/scroll
+        updateSoundIconState(false);
+      });
+    }
   }
 
   function setAudioTrack(index, autoplay = true) {
@@ -219,7 +241,9 @@
     if (soundText) soundText.textContent = track.name;
 
     if (autoplay && state.soundEnabled) {
-      bgAudio.play().catch(() => {});
+      bgAudio.play().then(() => {
+        updateSoundIconState(true);
+      }).catch(() => {});
     }
 
     updateMusicDropdownUI();
@@ -232,34 +256,37 @@
     });
   }
 
+  function updateSoundIconState(isPlaying) {
+    const soundIcon = document.getElementById('soundIcon');
+    if (!soundIcon) return;
+    if (isPlaying) {
+      soundIcon.innerHTML = `
+        <svg class="icon-svg sound-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      `;
+    } else {
+      soundIcon.innerHTML = `
+        <svg class="icon-svg sound-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"></polygon>
+          <line x1="23" y1="9" x2="17" y2="15"></line>
+          <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+      `;
+    }
+  }
+
   function toggleAudio() {
     if (!bgAudio) return;
-    const soundIcon = document.getElementById('soundIcon');
-
     if (state.soundEnabled) {
       state.soundEnabled = false;
       bgAudio.pause();
-      if (soundIcon) {
-        soundIcon.innerHTML = `
-          <svg class="icon-svg sound-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"></polygon>
-            <line x1="23" y1="9" x2="17" y2="15"></line>
-            <line x1="17" y1="9" x2="23" y2="15"></line>
-          </svg>
-        `;
-      }
+      updateSoundIconState(false);
     } else {
       state.soundEnabled = true;
-      bgAudio.play().catch(() => {});
-      if (soundIcon) {
-        soundIcon.innerHTML = `
-          <svg class="icon-svg sound-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"></polygon>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-          </svg>
-        `;
-      }
+      bgAudio.play().then(() => updateSoundIconState(true)).catch(() => {});
     }
   }
 
@@ -267,7 +294,9 @@
     getAudioCtx();
     if (!bgAudio || !state.soundEnabled) return;
     if (bgAudio.paused) {
-      bgAudio.play().catch(() => {});
+      bgAudio.play().then(() => {
+        updateSoundIconState(true);
+      }).catch(() => {});
     }
   }
 
@@ -2842,17 +2871,12 @@
     setupSweetsModal();
     setupPersonalizeModal();
 
+    const unlockEvents = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel'];
     const onFirstUserGesture = () => {
       startAudioOnGesture();
-      window.removeEventListener('click', onFirstUserGesture);
-      window.removeEventListener('touchstart', onFirstUserGesture);
-      window.removeEventListener('pointerdown', onFirstUserGesture);
-      window.removeEventListener('keydown', onFirstUserGesture);
+      unlockEvents.forEach(evt => window.removeEventListener(evt, onFirstUserGesture));
     };
-    window.addEventListener('click', onFirstUserGesture);
-    window.addEventListener('touchstart', onFirstUserGesture);
-    window.addEventListener('pointerdown', onFirstUserGesture);
-    window.addEventListener('keydown', onFirstUserGesture);
+    unlockEvents.forEach(evt => window.addEventListener(evt, onFirstUserGesture, { passive: true }));
   }
 
   if (document.readyState === 'loading') {
