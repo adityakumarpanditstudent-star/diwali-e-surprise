@@ -1744,6 +1744,14 @@
 
       const card1Inst = document.getElementById('card1Instruction');
       if (card1Inst) card1Inst.textContent = 'The entire gali is illuminated with festive light! ✨';
+
+      // Ensure proceed button is immediately visible & accessible on mobile on cardStep1
+      const cardStep1 = document.getElementById('cardStep1');
+      const step1WalkBtn = document.getElementById('step1WalkBtn');
+      const diyaBtn = document.getElementById('lightDiyaActionBtn');
+      if (step1WalkBtn) step1WalkBtn.classList.remove('hidden');
+      if (diyaBtn) diyaBtn.style.display = 'none';
+      if (cardStep1) cardStep1.classList.remove('card-faded');
     }, waveDuration + 400);
   }
 
@@ -2261,16 +2269,21 @@
         rangoliMesh.material.map.needsUpdate = true;
       }
 
-      showFloatingBanner("Rangoli filled with divine festive colors!", false);
+      showFloatingBanner("Rangoli colored! Ready to walk forward ✨", true, "Keep walking", () => {
+        hideFloatingBanner();
+        goToStep(2);
+      });
 
       setTimeout(() => {
-        hideFloatingBanner();
         if (holdCard) {
           holdCard.classList.remove('card-invisible-during-hold');
           holdCard.classList.add('hidden');
         }
-        if (wishesCard) wishesCard.classList.remove('hidden');
-      }, 2200);
+        if (wishesCard) {
+          wishesCard.classList.remove('hidden');
+          wishesCard.classList.remove('card-faded');
+        }
+      }, 1600);
     }
 
     if (holdRing) {
@@ -2307,6 +2320,9 @@
             hideFloatingBanner();
             goToStep(3);
           });
+          const cardStep3 = document.getElementById('cardStep3');
+          if (cardStep3) cardStep3.classList.remove('card-faded');
+          if (releaseLanternBtn) releaseLanternBtn.style.display = 'none';
           if (step3KeepWalkingBtn) step3KeepWalkingBtn.classList.remove('hidden');
         }, 5200);
       });
@@ -2336,8 +2352,19 @@
         if (cardStep3) cardStep3.classList.remove('card-faded');
         const relBtn = document.getElementById('releaseLanternBtn');
         const kwBtn = document.getElementById('step3KeepWalkingBtn');
-        if (relBtn) relBtn.classList.remove('hidden');
+        if (relBtn) {
+          relBtn.classList.remove('hidden');
+          relBtn.style.display = '';
+        }
         if (kwBtn) kwBtn.classList.add('hidden');
+
+        const diyaBtn = document.getElementById('lightDiyaActionBtn');
+        const walk1Btn = document.getElementById('step1WalkBtn');
+        if (diyaBtn) {
+          diyaBtn.classList.remove('hidden');
+          diyaBtn.style.display = '';
+        }
+        if (walk1Btn) walk1Btn.classList.add('hidden');
         goToStep(0);
       });
     }
