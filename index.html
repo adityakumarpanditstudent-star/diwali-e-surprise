@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Diwali Gali 3D | Interactive E-Surprise</title>
+  
+  <!-- Google Fonts: Royal Indian Typography, Devanagari & Calligraphy -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Mukta:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&family=Rozha+One&family=Tiro+Devanagari+Hindi:ital@0;1&family=Alex+Brush&display=swap" rel="stylesheet"/>
+  
+  <link rel="stylesheet" href="style.css"/>
+  <script src="three.min.js"></script>
+</head>
+<body>
+
+  <!-- Hidden HTML5 Audio Element for Real Soothing Indian Songs -->
+  <audio id="bgAudio" loop preload="auto"></audio>
+
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- 2D Fireworks & Sparkles Canvas Overlay -->
+  <canvas id="fireworks-canvas"></canvas>
+
+  <!-- Top Navigation & Controls Bar -->
+  <header class="top-nav-bar">
+    <button class="circle-btn top-back-btn" id="topBackBtn" title="Rewind to start of Gali" aria-label="Back">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    
+    <div class="top-nav-center">
+      <div class="gali-brand-wrap">
+        <svg class="nav-diya-icon" viewBox="0 0 32 32" fill="none">
+          <path d="M16 3C16 3 20 8.5 20 12C20 14.5 18.2 16.5 16 16.5C13.8 16.5 12 14.5 12 12C12 8.5 16 3 16 3Z" fill="url(#navFlameGrad)"/>
+          <path d="M5 17.5C5 23.5 10 28 16 28C22 28 27 23.5 27 17.5H5Z" fill="#D4AF37"/>
+          <path d="M3.5 17.5H28.5" stroke="#FFE082" stroke-width="1.8" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="navFlameGrad" x1="16" y1="3" x2="16" y2="16.5" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFF9C4"/>
+              <stop offset="0.5" stop-color="#FFD54F"/>
+              <stop offset="1" stop-color="#FF6F00"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="gali-brand-title">Diwali Gali</span>
+      </div>
+    </div>
+
+    <div class="top-nav-right">
+      <!-- Toggle View Gali / Hide Cards Vector -->
+      <button class="circle-btn view-gali-btn" id="toggleViewGaliBtn" title="View Gali (Hide/Show Card)" aria-label="View Gali">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </button>
+
+      <!-- Royal Greeting Card Nav Button Vector -->
+      <button class="circle-btn greeting-nav-btn" id="openGreetingCardNavBtn" title="Open Diwali Greeting Card" aria-label="Greeting Card">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+          <path d="M22 6L12 13L2 6"></path>
+        </svg>
+      </button>
+
+      <!-- Real Soothing Music Selector Dropdown & Toggle Vector -->
+      <div class="music-pill-wrap">
+        <button class="pill-btn sound-toggle-btn" id="soundToggleBtn" title="Select Soothing Music">
+          <span class="sound-icon" id="soundIcon">
+            <svg class="icon-svg sound-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </span>
+          <span class="sound-text" id="soundText">Soulful Bansuri Bamboo Flute</span>
+          <span class="dropdown-chevron">▾</span>
+        </button>
+
+        <div class="music-dropdown-menu hidden" id="musicDropdown">
+          <div class="menu-header">Select Soothing Song</div>
+          <div class="track-item active" data-track="0">
+            <span class="track-vector">
+              <svg class="mini-track-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 20L20 4M8 20L20 8M4 16L16 4"/>
+              </svg>
+            </span>
+            <div class="track-info">
+              <span class="track-name">Soulful Bansuri Bamboo Flute</span>
+              <span class="track-genre">Acoustic Live Flute &amp; Tanpura</span>
+            </div>
+          </div>
+          <div class="track-item" data-track="1">
+            <span class="track-vector">
+              <svg class="mini-track-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M9 12l6-4v8z" fill="currentColor"/>
+              </svg>
+            </span>
+            <div class="track-info">
+              <span class="track-name">Original Gali Melodic Dhun</span>
+              <span class="track-genre">Soothing Melodic Acoustic</span>
+            </div>
+          </div>
+          <div class="track-item" data-track="2">
+            <span class="track-vector">
+              <svg class="mini-track-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="8" cy="16" r="5"/>
+                <path d="M13 16V4l7-2v5l-7 2"/>
+              </svg>
+            </span>
+            <div class="track-info">
+              <span class="track-name">Royal Darbar Sitar Recital</span>
+              <span class="track-genre">Authentic Indian Classical Sitar</span>
+            </div>
+          </div>
+          <div class="track-item" data-track="3">
+            <span class="track-vector">
+              <svg class="mini-track-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </span>
+            <div class="track-info">
+              <span class="track-name">Temple Morning Meditative Flute</span>
+              <span class="track-genre">Serene Peaceful Harmony</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalize & Create Link Button Vector (Hidden in Recipient Mode!) -->
+      <button class="circle-btn gear-btn" id="gearBtn" title="Create &amp; Share E-Surprise" aria-label="Create Surprise">
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════
+       DRAG HINT PILL (Subtle look-around guidance)
+  ══════════════════════════════════════════════ -->
+  <div class="overhead-arch-wrap" id="overheadArch">
+    <div class="drag-hint-pill">
+      <svg class="swipe-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v7M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8M6 14a6 6 0 0 0 12 0v-3"/>
+        <path d="M3 12h2M19 12h2"/>
+      </svg>
+      <span>Drag or scroll anywhere to look around the gali</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       FLOATING GALI ACTION BANNER (Shown when cards are hidden)
+  ══════════════════════════════════════════════ -->
+  <div class="floating-gali-banner hidden" id="floatingGaliBanner">
+    <span class="banner-text" id="floatingBannerText">Watch the light spread through the gali...</span>
+    <button class="primary-gold-btn banner-action-btn hidden" id="floatingBannerBtn">
+      <span id="floatingBannerBtnText">Walk down the gali</span>
+      <span class="arrow-icon">→</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCENE 1: LIGHT THE FIRST DIYA (Dark -> Wave Light-Up)
+  ══════════════════════════════════════ -->
+  <div class="scene-card-container" id="cardStep1">
+    <div class="gali-card">
+      <h2 class="card-title">Light the First Diya</h2>
+      <p class="card-instruction" id="card1Instruction">The gali is asleep in the dark. Tap the diya below to awaken the celebration.</p>
+      
+      <button class="diya-action-btn pulse-glow" id="lightDiyaActionBtn">
+        <svg class="btn-diya-vector" viewBox="0 0 28 28" fill="none">
+          <path d="M14 2C14 2 18 7 18 10C18 12.2 16.2 14 14 14C11.8 14 10 12.2 10 10C10 7 14 2 14 2Z" fill="url(#btnFlameGrad)"/>
+          <path d="M4 15C4 20.5 8.5 25 14 25C19.5 25 24 20.5 24 15H4Z" fill="#D4AF37"/>
+          <path d="M2.5 15H25.5" stroke="#FFE082" stroke-width="1.8" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="btnFlameGrad" x1="14" y1="2" x2="14" y2="14" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFF9C4"/>
+              <stop offset="0.6" stop-color="#FFA000"/>
+              <stop offset="1" stop-color="#E65100"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Tap to light the first diya</span>
+      </button>
+
+      <button class="primary-gold-btn hidden" id="step1WalkBtn">
+        <span>Walk down the gali</span>
+        <span class="arrow-icon">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCENE 2: RANGOLI WAITING FOR COLOUR
+  ══════════════════════════════════════ -->
+  <div class="scene-card-container hidden" id="cardStep2" style="display:none;">
+    <!-- State 2A: Hold to color (FADES OUT while holding so ground is visible!) -->
+    <div class="gali-card" id="rangoliHoldCard">
+      <p class="card-script-subtitle">a rangoli, waiting for colour</p>
+      <h2 class="card-title">Press and hold to colour it</h2>
+      
+      <div class="press-hold-ring-wrap" id="pressHoldRing" role="button" tabindex="0">
+        <svg class="progress-ring-svg" width="94" height="94">
+          <circle class="ring-bg" cx="47" cy="47" r="40"></circle>
+          <circle class="ring-fill" id="ringProgressCircle" cx="47" cy="47" r="40"></circle>
+        </svg>
+        <div class="ring-center-content">
+          <span class="ring-percent" id="ringPercentText">0%</span>
+        </div>
+      </div>
+      <p class="hold-helper-text" id="holdHelperText">Press &amp; hold the golden circle to paint the floor</p>
+    </div>
+
+    <!-- State 2B: Four wishes revealed -->
+    <div class="gali-card hidden" id="rangoliWishesCard">
+      <p class="card-script-subtitle">your name in the middle, and</p>
+      <h2 class="card-title">Four wishes for you</h2>
+      <ul class="wishes-list" id="wishesListDisplay">
+        <li><span class="wish-bullet bullet-pink">●</span> <span id="w1Text">Ghar mein hamesha roshni rahe</span></li>
+        <li><span class="wish-bullet bullet-yellow">●</span> <span id="w2Text">Good health for everyone we love</span></li>
+        <li><span class="wish-bullet bullet-cyan">●</span> <span id="w3Text">Sukh, shanti aur samriddhi</span></li>
+        <li><span class="wish-bullet bullet-gold">●</span> <span id="w4Text">May all your heartfelt dreams take flight</span></li>
+      </ul>
+      <div class="card-action-row">
+        <button class="secondary-pill-btn" id="openSweetsBtn">
+          <svg class="btn-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 2l3 7h7l-5.5 4.5L18.5 21 12 16.5 5.5 21l2-7.5L2 9h7z" fill="url(#btnGoldGrad)"/>
+          </svg>
+          <span>Royal Mithai</span>
+        </button>
+        <button class="secondary-pill-btn" id="openGreetingCardRangoliBtn">
+          <svg class="btn-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M22 6L12 13L2 6"></path>
+          </svg>
+          <span>Greeting Card</span>
+        </button>
+        <button class="primary-gold-btn" id="step2KeepWalkingBtn">
+          <span>Keep walking</span>
+          <span class="arrow-icon">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Minimal Floating Rangoli Progress HUD (Shown when card is invisible during hold) -->
+  <div class="rangoli-painting-hud hidden" id="rangoliPaintingHud">
+    <div class="hud-content">
+      <div class="hud-pulsing-dot"></div>
+      <span class="hud-status-text" id="hudStatusText">Painting vibrant rangoli colors...</span>
+      <span class="hud-progress-val" id="hudProgressVal">0%</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCENE 3: SKY LANTERN (Unobstructed & Attractive)
+  ══════════════════════════════════════ -->
+  <div class="scene-card-container lantern-scene-card hidden" id="cardStep3" style="display:none;">
+    <div class="gali-card compact-lantern-card">
+      <p class="card-script-subtitle">and the whole town let theirs go too</p>
+      <h2 class="card-title compact-title">Wherever you are tonight, this light found you.</h2>
+      
+      <button class="lantern-release-btn pulse-glow" id="releaseLanternBtn">
+        <svg class="btn-lantern-vector" viewBox="0 0 28 28" fill="none">
+          <path d="M7 6C7 5.4 7.4 5 8 5H20C20.6 5 21 5.4 21 6V8C22.5 10.5 23 13 23 16C23 19.5 20.5 22 18 22H10C7.5 22 5 19.5 5 16C5 13 5.5 10.5 7 8V6Z" fill="url(#btnLanternGrad)" stroke="#FFE082" stroke-width="1.4"/>
+          <circle cx="14" cy="15" r="3.5" fill="#FFF9C4"/>
+          <path d="M14 22V26M10 22V25M18 22V25" stroke="#FFD54F" stroke-width="1.6" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="btnLanternGrad" x1="14" y1="5" x2="14" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#FFE082"/>
+              <stop offset="0.6" stop-color="#FF9800"/>
+              <stop offset="1" stop-color="#E65100"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Tap to release sky lantern</span>
+      </button>
+
+      <button class="primary-gold-btn hidden" id="step3KeepWalkingBtn">
+        <span>Ascend to the rooftop</span>
+        <span class="arrow-icon">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SCENE 4: ROOFTOP FIREWORKS FINALE
+  ══════════════════════════════════════ -->
+  <div class="scene-card-container rooftop-container hidden" id="cardStep4" style="display:none;">
+    <div class="rooftop-sky-text">
+      <div class="sky-festive-badge">
+        <span class="badge-star">✦</span>
+        <span>SHUBH DEEPAVALI</span>
+        <span class="badge-star">✦</span>
+      </div>
+      <h1 class="sky-happy-diwali">Happy Diwali, <span id="card4Recipient">you</span>!</h1>
+      <p class="sky-sender" id="card4Sender">with love, me</p>
+      <p class="sky-hint">tap anywhere in the sky for fireworks ✨</p>
+    </div>
+
+    <div class="rooftop-actions-card">
+      <div class="rooftop-main-buttons">
+        <button class="primary-gold-btn" id="rooftopGreetingCardBtn">
+          <svg class="btn-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M22 6L12 13L2 6"></path>
+          </svg>
+          <span>Read Royal Greeting Card</span>
+        </button>
+        <button class="secondary-pill-btn rooftop-sweets-btn" id="rooftopSweetsBtn">
+          <svg class="btn-mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2" fill="url(#btnGoldGrad)"/>
+          </svg>
+          <span>Open Mithai Box</span>
+        </button>
+      </div>
+      
+      <div class="rooftop-sub-actions">
+        <button class="subtle-link-btn" id="walkAgainBtn">
+          ↺ Walk the gali again
+        </button>
+        <button class="whatsapp-badge-btn" id="shareSurpriseBtn">
+          <svg class="btn-wa-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.301-.15-1.78-.879-2.056-.98-.276-.1-.477-.15-.678.15-.2.301-.777.98-.953 1.18-.175.2-.351.226-.652.075-.301-.15-1.272-.469-2.423-1.496-.895-.799-1.5-1.786-1.676-2.087-.176-.301-.019-.464.132-.614.136-.135.301-.351.452-.527.15-.175.2-.301.3-.502.101-.2.051-.376-.025-.526-.076-.15-.678-1.633-.929-2.237-.245-.588-.493-.508-.678-.518-.175-.01-.376-.01-.577-.01-.2 0-.527.075-.803.376s-1.054 1.03-1.054 2.511 1.08 2.912 1.23 3.113c.15.2 2.126 3.246 5.15 4.553.719.311 1.281.497 1.719.636.724.23 1.382.198 1.903.12.58-.088 1.78-.727 2.031-1.43.251-.703.251-1.306.176-1.43-.075-.126-.276-.201-.577-.352zm-5.467 7.618a9.92 9.92 0 0 1-5.06-1.387l-.363-.215-3.76.986.999-3.666-.237-.378a9.92 9.92 0 1 1 8.421 4.66zM12 2C6.477 2 2 6.477 2 12c0 1.764.456 3.483 1.323 5l-1.323 5 5-1.323A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/>
+          </svg>
+          <span>Share on WhatsApp</span>
+        </button>
+      </div>
+
+      <!-- Recipient Mode Notice & Create Your Own Link -->
+      <div class="recipient-create-notice hidden" id="recipientCreateNotice">
+        <p class="notice-text">Enjoyed this surprise? Handcraft one for someone special:</p>
+        <button class="create-own-btn" id="createOwnGaliBtn">Create Your Diwali Gali →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Capsule Navigation Bar -->
+  <nav class="bottom-capsule-nav" id="bottomNavCapsule">
+    <button class="capsule-arrow" id="navBackArrow" title="Previous scene" aria-label="Previous">‹</button>
+    <div class="capsule-dashes" id="capsuleDashes">
+      <span class="dash-pill active" data-step="0" title="First Diya"></span>
+      <span class="dash-pill" data-step="1" title="Rangoli"></span>
+      <span class="dash-pill" data-step="2" title="Sky Lantern"></span>
+      <span class="dash-pill" data-step="3" title="Fireworks"></span>
+    </div>
+    <button class="capsule-arrow" id="navNextArrow" title="Next scene" aria-label="Next">›</button>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════
+       LUXURY ROYAL GREETING CARD MODAL (Scrollable & Vector Calligraphy)
+  ══════════════════════════════════════════════ -->
+  <div class="modal-backdrop hidden" id="greetingCardModal">
+    <div class="modal-dialog greeting-card-dialog">
+      <div class="greeting-card-wrapper theme-crimson" id="greetingCardEnvelope">
+        
+        <!-- Header Ribbon -->
+        <div class="card-ribbon-bar">
+          <div class="card-shubh-badge">
+            <svg class="ribbon-star-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5Z"/></svg>
+            <span>SHUBH DEEPAVALI</span>
+            <svg class="ribbon-star-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5Z"/></svg>
+          </div>
+          <button class="modal-close-x greeting-close-x" id="closeGreetingCardX" aria-label="Close">✕</button>
+        </div>
+
+        <!-- Ornate Greeting Card Frame (Scrollable Container) -->
+        <div class="royal-greeting-card">
+          <!-- Gold Mandala Filigree Corner Vectors -->
+          <svg class="card-corner-vector top-left" viewBox="0 0 40 40" fill="none">
+            <path d="M2 2h36M2 2v36M2 2l24 24M2 14c8 0 12-4 12-12M2 26c14 0 24-10 24-24M14 2c0 8-4 12-12 12" stroke="#FFD700" stroke-width="1.4"/>
+            <circle cx="6" cy="6" r="2" fill="#FFE082"/>
+          </svg>
+          <svg class="card-corner-vector top-right" viewBox="0 0 40 40" fill="none">
+            <path d="M38 2H2M38 2v36M38 2L14 26M38 14c-8 0-12-4-12-12M38 26c-14 0-24-10-24-24M26 2c0 8 4 12 12 12" stroke="#FFD700" stroke-width="1.4"/>
+            <circle cx="34" cy="6" r="2" fill="#FFE082"/>
+          </svg>
+          <svg class="card-corner-vector bottom-left" viewBox="0 0 40 40" fill="none">
+            <path d="M2 38h36M2 38V2M2 38l24-24M2 26c8 0 12 4 12 12M2 14c14 0 24 10 24 24M14 38c0-8-4-12-12-12" stroke="#FFD700" stroke-width="1.4"/>
+            <circle cx="6" cy="34" r="2" fill="#FFE082"/>
+          </svg>
+          <svg class="card-corner-vector bottom-right" viewBox="0 0 40 40" fill="none">
+            <path d="M38 38H2M38 38V2M38 38L14 14M38 26c-8 0-12 4-12 12M38 14c-14 0-24 10-24 24M26 38c0-8 4-12 12-12" stroke="#FFD700" stroke-width="1.4"/>
+            <circle cx="34" cy="34" r="2" fill="#FFE082"/>
+          </svg>
+
+          <!-- Wax Seal Diya Emblem Vector -->
+          <div class="wax-seal-emblem">
+            <svg class="seal-diya-vector" viewBox="0 0 28 28" fill="none">
+              <path d="M14 4C14 4 17 8 17 10.5C17 12.2 15.6 13.5 14 13.5C12.4 13.5 11 12.2 11 10.5C11 8 14 4 14 4Z" fill="#FFF9C4"/>
+              <path d="M5 14C5 19 9 22.5 14 22.5C19 22.5 23 19 23 14H5Z" fill="#FFE082"/>
+              <path d="M4 14H24" stroke="#FFF" stroke-width="1.2"/>
+            </svg>
+          </div>
+
+          <div class="greeting-inner-content">
+            <p class="greeting-salutation-script">Dearest</p>
+            <h1 class="greeting-recipient-calligraphy" id="greetingModalRecipient">you</h1>
+
+            <div class="golden-separator-line">
+              <svg class="sep-star-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5Z"/></svg>
+              <svg class="sep-diya-svg" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2C12 2 14.5 5.5 14.5 7.5C14.5 9 13.4 10 12 10C10.6 10 9.5 9 9.5 7.5C9.5 5.5 12 2 12 2Z" fill="#FFA000"/>
+                <path d="M4 11C4 15 7.5 18 12 18C16.5 18 20 15 20 11H4Z" fill="#FFD700"/>
+              </svg>
+              <svg class="sep-star-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5Z"/></svg>
+            </div>
+
+            <!-- Personalized Heartfelt Message -->
+            <p class="greeting-message-text" id="greetingModalMessage">
+              दीपों की जगमगाहट, अपनों का साथ, और काजू कतली की मिठास! इस पावन दीवाली आपके घर में अपार खुशियाँ, उत्तम स्वास्थ्य और सुख-समृद्धि आए। शुभ दीपावली! 🪔✨
+            </p>
+
+            <!-- 4 Traditional Auspicious Blessings Vectors -->
+            <div class="auspicious-blessings-grid">
+              <div class="blessing-item">
+                <svg class="blessing-vector" viewBox="0 0 32 32" fill="none">
+                  <circle cx="16" cy="7" r="4" fill="#FFD700"/>
+                  <path d="M10 12h12l-2 13H12L10 12Z" fill="#D4AF37" stroke="#FFE082" stroke-width="1.2"/>
+                  <path d="M8 12C8 12 11 15 16 15C21 15 24 12 24 12" stroke="#FF9800" stroke-width="1.5"/>
+                  <circle cx="16" cy="19" r="2.5" fill="#FFE082"/>
+                </svg>
+                <div class="blessing-desc">
+                  <strong class="b-title">Lakshmi's Wealth</strong>
+                  <span class="b-sub">Samriddhi &amp; Fortune</span>
+                </div>
+              </div>
+
+              <div class="blessing-item">
+                <svg class="blessing-vector" viewBox="0 0 32 32" fill="none">
+                  <path d="M16 8C16 8 11 14 11 19C11 21.8 13.2 24 16 24C18.8 24 21 21.8 21 19C21 14 16 8 16 8Z" fill="#FF4081"/>
+                  <path d="M16 12C16 12 8 16 6 21C6 24 8.5 25 11 24C14 23 16 17 16 12Z" fill="#F06292"/>
+                  <path d="M16 12C16 12 24 16 26 21C26 24 23.5 25 21 24C18 23 16 17 16 12Z" fill="#F06292"/>
+                </svg>
+                <div class="blessing-desc">
+                  <strong class="b-title">Saraswati's Grace</strong>
+                  <span class="b-sub">Wisdom &amp; Harmony</span>
+                </div>
+              </div>
+
+              <div class="blessing-item">
+                <svg class="blessing-vector" viewBox="0 0 32 32" fill="none">
+                  <circle cx="16" cy="10" r="5" fill="#FFA000"/>
+                  <path d="M14 15C14 18 16 21 18 21C19.5 21 20 19.5 20 18" stroke="#FFD54F" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M10 11H8C6.5 11 6 13 7 14L9 16" stroke="#FFA000" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M22 11H24C25.5 11 26 13 25 14L23 16" stroke="#FFA000" stroke-width="1.8" stroke-linecap="round"/>
+                  <circle cx="16" cy="7.5" r="1.5" fill="#E91E63"/>
+                </svg>
+                <div class="blessing-desc">
+                  <strong class="b-title">Ganesha's Protection</strong>
+                  <span class="b-sub">Auspicious Beginnings</span>
+                </div>
+              </div>
+
+              <div class="blessing-item">
+                <svg class="blessing-vector" viewBox="0 0 32 32" fill="none">
+                  <path d="M16 4C16 4 21 10 21 15C21 18.5 18.8 21 16 21C13.2 21 11 18.5 11 15C11 10 16 4 16 4Z" fill="#FF5722"/>
+                  <path d="M16 9C16 9 19 13 19 16C19 18 17.5 19.5 16 19.5C14.5 19.5 13 18 13 16C13 13 16 9 16 9Z" fill="#FFEB3B"/>
+                  <path d="M7 22C7 25 11 27 16 27C21 27 25 25 25 22H7Z" fill="#D4AF37"/>
+                </svg>
+                <div class="blessing-desc">
+                  <strong class="b-title">Agni's Purity</strong>
+                  <span class="b-sub">Divine Inner Light</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Royal Handwritten Signature -->
+            <div class="greeting-signature-block">
+              <p class="signature-intro">With all my love and blessings,</p>
+              <p class="signature-name-calligraphy" id="greetingModalSender">me</p>
+            </div>
+
+            <!-- Card End Decorative Ornament -->
+            <div class="card-end-ornament">
+              <span class="ornament-star">✦</span>
+              <span class="ornament-gem">❖</span>
+              <span class="ornament-star">✦</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer Actions -->
+        <div class="greeting-card-footer">
+          <div class="card-theme-picker">
+            <span class="theme-label">Theme:</span>
+            <button class="theme-dot crimson active" data-card-theme="crimson" title="Royal Crimson Velvet"></button>
+            <button class="theme-dot sapphire" data-card-theme="sapphire" title="Peacock Sapphire"></button>
+            <button class="theme-dot midnight" data-card-theme="midnight" title="Midnight Starlight"></button>
+          </div>
+          <button class="primary-gold-btn" id="closeGreetingCardBtn">Return to Gali ✨</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       REALISTIC SWEET BOX MODAL (Scrollable & Handcrafted Vectors)
+  ══════════════════════════════════════ -->
+  <div class="modal-backdrop hidden" id="sweetsModal">
+    <div class="modal-dialog sweets-dialog">
+      <div class="modal-header">
+        <div class="sweets-header-title">
+          <svg class="modal-header-svg" viewBox="0 0 28 28" fill="none">
+            <rect x="4" y="9" width="20" height="15" rx="2" fill="#D4AF37" stroke="#FFE082" stroke-width="1.4"/>
+            <path d="M3 9H25" stroke="#FFE082" stroke-width="2"/>
+            <path d="M14 9V24" stroke="#FFF" stroke-width="1.8"/>
+            <path d="M14 9C14 9 11 4 8 5C5 6 9 9 14 9Z" fill="#E91E63"/>
+            <path d="M14 9C14 9 17 4 20 5C23 6 19 9 14 9Z" fill="#E91E63"/>
+          </svg>
+          <h3>Royal Diwali Mithai Box</h3>
+        </div>
+        <button class="modal-close-x" id="closeSweetsX" aria-label="Close">✕</button>
+      </div>
+
+      <div class="sweets-body">
+        <p class="sweets-intro">Traditional handcrafted Diwali delicacies with pure ghee &amp; saffron.</p>
+
+        <!-- 4 Realistic Indian Sweets Showcase -->
+        <div class="sweets-realistic-grid">
+          <!-- 1. Kaju Katli -->
+          <div class="sweet-card" data-sweet="kaju">
+            <div class="sweet-realistic-render kaju-katli-piece">
+              <div class="silver-vark-shimmer"></div>
+            </div>
+            <h4 class="sweet-name">Kaju Katli</h4>
+            <p class="sweet-desc">Diamond cashew fudge with edible silver leaf</p>
+          </div>
+
+          <!-- 2. Motichoor Ladoo -->
+          <div class="sweet-card" data-sweet="ladoo">
+            <div class="sweet-realistic-render motichoor-ladoo-piece">
+              <div class="ladoo-pistachio-flake"></div>
+            </div>
+            <h4 class="sweet-name">Motichoor Ladoo</h4>
+            <p class="sweet-desc">Golden saffron pearls cooked in pure desi ghee</p>
+          </div>
+
+          <!-- 3. Gulab Jamun -->
+          <div class="sweet-card" data-sweet="jamun">
+            <div class="sweet-realistic-render gulab-jamun-piece">
+              <div class="jamun-glaze-shimmer"></div>
+            </div>
+            <h4 class="sweet-name">Gulab Jamun</h4>
+            <p class="sweet-desc">Caramelized milk dumplings soaked in cardamom syrup</p>
+          </div>
+
+          <!-- 4. Kesar Peda -->
+          <div class="sweet-card" data-sweet="peda">
+            <div class="sweet-realistic-render kesar-peda-piece">
+              <div class="almond-slice-center"></div>
+            </div>
+            <h4 class="sweet-name">Kesar Peda</h4>
+            <p class="sweet-desc">Creamy saffron mawa fudge with almond stamp</p>
+          </div>
+        </div>
+
+        <div class="sweet-blessing-box">
+          <span class="blessing-quote">"May the coming year be as sweet as these festive treats!"</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="primary-gold-btn" id="closeSweetsBtn">Back to the Gali ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Global SVG Gradients Definition -->
+  <svg style="display:none;">
+    <defs>
+      <linearGradient id="btnGoldGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#FFE082"/>
+        <stop offset="1" stop-color="#FFB703"/>
+      </linearGradient>
+      <linearGradient id="kajuGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#F5EFE6"/>
+        <stop offset="0.6" stop-color="#DDD5C7"/>
+        <stop offset="1" stop-color="#C5BCAE"/>
+      </linearGradient>
+      <linearGradient id="silverVarkGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop stop-color="#FFFFFF"/>
+        <stop offset="0.4" stop-color="#E2E8F0"/>
+        <stop offset="0.7" stop-color="#CBD5E1"/>
+        <stop offset="1" stop-color="#FFFFFF"/>
+      </linearGradient>
+      <radialGradient id="ladooGrad" cx="35%" cy="35%" r="65%">
+        <stop stop-color="#FFE082"/>
+        <stop offset="0.45" stop-color="#FFA000"/>
+        <stop offset="0.85" stop-color="#E65100"/>
+        <stop offset="1" stop-color="#BF360C"/>
+      </radialGradient>
+      <radialGradient id="jamunGrad" cx="30%" cy="30%" r="70%">
+        <stop stop-color="#9C4405"/>
+        <stop offset="0.5" stop-color="#552200"/>
+        <stop offset="0.9" stop-color="#2D1100"/>
+        <stop offset="1" stop-color="#190900"/>
+      </radialGradient>
+      <radialGradient id="pedaGrad" cx="40%" cy="35%" r="65%">
+        <stop stop-color="#FFF59D"/>
+        <stop offset="0.5" stop-color="#FBC02D"/>
+        <stop offset="1" stop-color="#F57F17"/>
+      </radialGradient>
+      <radialGradient id="pedaInnerGrad" cx="45%" cy="40%" r="60%">
+        <stop stop-color="#FBC02D"/>
+        <stop offset="1" stop-color="#E65100"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- ══════════════════════════════════════════════
+       PERSONALIZE & CREATE WHATSAPP E-SURPRISE MODAL (For Senders)
+  ══════════════════════════════════════ -->
+  <div class="modal-backdrop hidden" id="personalizeModal">
+    <div class="modal-dialog personalize-dialog">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <svg class="modal-header-svg" viewBox="0 0 24 24" fill="none">
+            <polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2" fill="url(#btnGoldGrad)"/>
+          </svg>
+          <h3 class="modal-title">Create Diwali E-Surprise</h3>
+        </div>
+        <button class="modal-close-x" id="modalCloseX" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-subtext">Customize this 3D Diwali Gali for your loved one. When they open the link, it is locked into <strong>Recipient Mode</strong> so they cannot alter your names or settings!</p>
+
+        <!-- Names Section -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="inputRecipient">Recipient's Name (Who is this surprise for?)</label>
+            <input type="text" id="inputRecipient" maxlength="25" placeholder="e.g. Priya, Papa, Ananya"/>
+          </div>
+          <div class="form-group">
+            <label for="inputSender">Sender's Name (Your name)</label>
+            <input type="text" id="inputSender" maxlength="25" placeholder="e.g. Rahul, Kavya, The Vermas"/>
+          </div>
+        </div>
+
+        <!-- Realistic Sample Notes by Language & Tone -->
+        <div class="form-group notes-picker-group">
+          <div class="notes-header-row">
+            <div class="notes-main-label">
+              <span>Sample Notes &amp; Wishes</span>
+              <span class="notes-sub-hint">Tap any sample note below to auto-fill or customize</span>
+            </div>
+            <button type="button" class="shuffle-note-btn" id="shuffleNoteBtn" title="Pick a random heartfelt note">
+              <svg class="shuffle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 3 21 3 21 8"></polyline>
+                <line x1="4" y1="20" x2="21" y2="3"></line>
+                <polyline points="21 16 21 21 16 21"></polyline>
+                <line x1="15" y1="15" x2="21" y2="21"></line>
+                <line x1="4" y1="4" x2="9" y2="9"></line>
+              </svg>
+              <span>🎲 Shuffle Note</span>
+            </button>
+          </div>
+
+          <!-- Language Selector Tabs -->
+          <div class="note-lang-tabs" id="noteLangTabs">
+            <button type="button" class="lang-tab-btn active" data-lang="hindi">
+              <span>🇮🇳 हिंदी (Hindi)</span>
+            </button>
+            <button type="button" class="lang-tab-btn" data-lang="hinglish">
+              <span>🪔 Hinglish</span>
+            </button>
+            <button type="button" class="lang-tab-btn" data-lang="english">
+              <span>✨ English</span>
+            </button>
+          </div>
+
+          <!-- Sample Note Cards Container (Populated dynamically) -->
+          <div class="sample-notes-carousel" id="sampleNotesContainer"></div>
+        </div>
+
+        <!-- Personal Note Input Box -->
+        <div class="form-group">
+          <div class="textarea-label-row">
+            <label for="inputMessage">Personal Note / Message</label>
+            <span class="char-count" id="messageCharCount">0 / 400</span>
+          </div>
+          <textarea id="inputMessage" rows="3" maxlength="400" placeholder="Write your personal message or select from samples above..."></textarea>
+        </div>
+
+        <!-- Four Wishes Theme for Rangoli -->
+        <div class="form-group">
+          <label>Rangoli 4-Wishes Theme</label>
+          <select id="wishesThemeSelect" class="styled-select">
+            <option value="traditional">Traditional Blessing (Roshni, Health, Sukh Shanti, Dreams)</option>
+            <option value="prosperity">Prosperity &amp; Wealth (Lakshmi Blessings, Growth, Success, Joy)</option>
+            <option value="family">Family &amp; Togetherness (Warmth, Laughter, Sweet Moments, Harmony)</option>
+          </select>
+        </div>
+
+        <!-- Default Soothing Song Selection -->
+        <div class="form-group">
+          <label>Default Soothing Song</label>
+          <select id="defaultSongSelect" class="styled-select">
+            <option value="0">Soulful Bansuri Bamboo Flute</option>
+            <option value="1">Original Gali Melodic Dhun</option>
+            <option value="2">Royal Darbar Sitar Recital</option>
+            <option value="3">Temple Morning Meditative Flute</option>
+          </select>
+        </div>
+
+        <!-- Recipient Link Sharing Box -->
+        <div class="whatsapp-box">
+          <div class="whatsapp-title-row">
+            <svg class="wa-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <strong>Generated Recipient Link (View &amp; Interact Only)</strong>
+          </div>
+          <div class="copy-url-row">
+            <input type="text" id="shareUrlField" readonly/>
+            <button class="copy-btn" id="copyUrlBtn">Copy Link</button>
+          </div>
+
+          <div class="link-actions-row">
+            <button class="open-tab-btn" id="openNewTabBtn" title="Test what the recipient sees">
+              <span>🚀 Open in New Tab</span>
+            </button>
+            <button class="whatsapp-direct-btn" id="directWhatsAppBtn">
+              <span>📲 Share on WhatsApp</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="primary-gold-btn" id="modalSaveBtn">Update My Gali ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div class="toast-popup hidden" id="toastPopup">Link copied to clipboard! 📋</div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,2069 @@
+/* ══════════════════════════════════════════════════════════════
+   DIWALI GALI 3D — LUXURY INDIAN FESTIVE STYLES
+   - Scrollable Royal Greeting Card & Mithai Box
+   - Handcrafted SVG Vector Icons (No Plain Emojis)
+   - Real-time Rangoli Creation with Card Invisible during hold
+   - Atmospheric Glowing Sky Lantern with Radial Bloom
+   - Interactive 360° Drag & Scroll Gali Exploration
+══════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --gold: #FFB703;
+  --gold-glow: #FFE082;
+  --gold-warm: #EBA83A;
+  --gold-deep: #C68A00;
+  --sign-bg-midnight: #140A28;
+  --sign-border: #E5A93C;
+  --card-bg: rgba(20, 8, 36, 0.88);
+  --card-border: rgba(255, 183, 3, 0.32);
+  --text-primary: #FFFFFF;
+  --text-gold: #FFE082;
+  --text-cream: #F5EFE6;
+  --whatsapp-green: #25D366;
+  --font-serif: 'Playfair Display', 'Tiro Devanagari Hindi', 'Rozha One', Georgia, serif;
+  --font-royal: 'Cinzel Decorative', serif;
+  --font-cinzel: 'Cinzel', serif;
+  --font-script: 'Alex Brush', cursive;
+  --font-calligraphy: 'Great Vibes', cursive;
+  --font-sans: 'Poppins', 'Mukta', -apple-system, sans-serif;
+  --radius-capsule: 999px;
+  --radius-card: 22px;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #04010B;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  position: fixed;
+  user-select: none;
+  touch-action: none;
+}
+
+/* 3D WebGL Canvas */
+#canvas-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  cursor: grab;
+}
+
+#canvas-container:active {
+  cursor: grabbing;
+}
+
+#canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* 2D Fireworks Canvas */
+#fireworks-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════
+   GLOBAL CUSTOM SCROLLBAR (Gold & Smooth)
+══════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 2, 20, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #FFD54F 0%, #D4AF37 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 6px rgba(255, 183, 3, 0.4);
+}
+
+/* ══════════════════════════════════════════════
+   VECTOR ICON DEFINITIONS
+══════════════════════════════════════════════ */
+.icon-svg {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.nav-diya-icon {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.7));
+}
+
+.sound-svg-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gold-glow);
+}
+
+.mini-track-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gold);
+}
+
+.btn-diya-vector, .btn-lantern-vector {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 0 8px rgba(255, 183, 3, 0.7));
+}
+
+.btn-mini-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.btn-wa-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.modal-header-svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.wa-icon-svg {
+  width: 18px;
+  height: 18px;
+  color: #25D366;
+}
+
+/* ══════════════════════════════════════════════
+   TOP NAVIGATION & CONTROLS
+══════════════════════════════════════════════ */
+.top-nav-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 1, 12, 0.88) 0%, transparent 100%);
+}
+
+.top-nav-bar > * {
+  pointer-events: auto;
+}
+
+.circle-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(22, 10, 40, 0.78);
+  border: 1px solid rgba(255, 183, 3, 0.32);
+  color: var(--gold-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.circle-btn:hover {
+  background: rgba(255, 183, 3, 0.25);
+  border-color: var(--gold);
+  transform: scale(1.08);
+}
+
+.circle-btn.active {
+  background: rgba(255, 183, 3, 0.35);
+  border-color: var(--gold-glow);
+  box-shadow: 0 0 15px rgba(255, 183, 3, 0.5);
+}
+
+.top-nav-center {
+  pointer-events: none;
+}
+
+.gali-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gali-brand-title {
+  font-family: var(--font-royal);
+  font-size: clamp(0.85rem, 2.2vw, 1.15rem);
+  color: var(--gold-glow);
+  text-shadow: 0 0 14px rgba(255, 183, 3, 0.7);
+  letter-spacing: 1.5px;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Music Dropdown Menu */
+.music-pill-wrap {
+  position: relative;
+}
+
+.pill-btn {
+  background: rgba(22, 10, 40, 0.82);
+  border: 1px solid rgba(255, 183, 3, 0.35);
+  color: #FFF;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-capsule);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+}
+
+.pill-btn:hover {
+  background: rgba(255, 183, 3, 0.22);
+  border-color: var(--gold);
+  color: var(--gold-glow);
+}
+
+.dropdown-chevron {
+  font-size: 0.75rem;
+  color: var(--gold);
+  margin-left: 2px;
+}
+
+.music-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 270px;
+  background: rgba(18, 6, 34, 0.96);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 20px rgba(255, 183, 3, 0.25);
+  backdrop-filter: blur(16px);
+  padding: 8px;
+  z-index: 50;
+  animation: cardFadeIn 0.25s ease both;
+}
+
+.menu-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 4px;
+}
+
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.track-item:hover, .track-item.active {
+  background: rgba(255, 183, 3, 0.18);
+}
+
+.track-item.active .track-name {
+  color: var(--gold-glow);
+  font-weight: 600;
+}
+
+.track-vector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.track-name {
+  font-size: 0.82rem;
+  color: #FFF;
+}
+
+.track-genre {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ══════════════════════════════════════════════
+   DRAG HINT & LOOK-AROUND PILL (Step 0)
+══════════════════════════════════════════════ */
+.overhead-arch-wrap {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  max-width: 90vw;
+}
+
+.arch-sub-intro {
+  font-family: var(--font-script);
+  font-size: clamp(1.4rem, 4vw, 2.1rem);
+  color: var(--gold-glow);
+  text-shadow: 0 0 12px rgba(255, 183, 3, 0.75);
+  margin-bottom: 2px;
+}
+
+.arch-sub-hint {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 2.8vw, 1.35rem);
+  color: #FFFFFF;
+  text-shadow: 0 0 16px rgba(0, 0, 0, 0.9);
+  margin-bottom: 12px;
+}
+
+.arch-signboard {
+  background: linear-gradient(180deg, #1C0F35 0%, var(--sign-bg-midnight) 100%);
+  border: 2px solid var(--sign-border);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.9), 0 0 28px rgba(229, 169, 60, 0.4), inset 0 0 0 2px #7A5312;
+  border-radius: 14px;
+  padding: 16px 36px 18px;
+  min-width: min(340px, 86vw);
+}
+
+.sign-top-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: var(--gold-glow);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.badge-star {
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
+.sign-recipient {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5.5vw, 3rem);
+  font-weight: 700;
+  color: #FFE699;
+  text-shadow: 0 0 24px rgba(255, 215, 0, 0.75), 0 2px 6px rgba(0, 0, 0, 0.9);
+  line-height: 1.15;
+}
+
+.sign-sender {
+  font-family: var(--font-script);
+  font-size: clamp(1.15rem, 3.2vw, 1.45rem);
+  color: #FFD180;
+  margin-top: 3px;
+}
+
+/* Drag & Scroll Hint */
+.drag-hint-pill {
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(22, 10, 40, 0.75);
+  border: 1px solid rgba(255, 183, 3, 0.3);
+  border-radius: var(--radius-capsule);
+  padding: 6px 16px;
+  font-size: 0.78rem;
+  color: #FFD54F;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  animation: cardFadeIn 0.8s ease both;
+  pointer-events: none;
+}
+
+.swipe-hint-icon {
+  width: 16px;
+  height: 16px;
+  stroke: var(--gold-glow);
+}
+
+/* ══════════════════════════════════════════════
+   FLOATING GALI ACTION BANNER
+══════════════════════════════════════════════ */
+.floating-gali-banner {
+  position: absolute;
+  bottom: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 24;
+  background: rgba(18, 6, 32, 0.92);
+  border: 1px solid var(--gold);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.85), 0 0 20px rgba(255, 183, 3, 0.35);
+  border-radius: var(--radius-capsule);
+  padding: 10px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  backdrop-filter: blur(16px);
+  animation: cardFadeIn 0.35s ease both;
+  max-width: 90vw;
+}
+
+.banner-text {
+  font-family: var(--font-serif);
+  font-size: clamp(0.88rem, 2.4vw, 1.05rem);
+  color: #FFF3D6;
+  white-space: nowrap;
+}
+
+.banner-action-btn {
+  padding: 9px 20px !important;
+  font-size: 0.88rem !important;
+  box-shadow: 0 4px 14px rgba(235, 168, 58, 0.4) !important;
+}
+
+/* ══════════════════════════════════════════════
+   SCENE FLOATING CARDS & FADING
+══════════════════════════════════════════════ */
+.scene-card-container {
+  position: absolute;
+  bottom: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 90%;
+  max-width: 520px;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scene-card-container > * {
+  pointer-events: auto;
+}
+
+.card-faded {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translate(-50%, 25px) !important;
+}
+
+/* While holding to paint rangoli, card is completely invisible so ground is visible! */
+.card-invisible-during-hold {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translate(-50%, 35px) !important;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.gali-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 183, 3, 0.16);
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  backdrop-filter: blur(18px);
+  text-align: center;
+  animation: cardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.card-script-subtitle {
+  font-family: var(--font-script);
+  font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+  color: var(--gold-glow);
+  margin-bottom: 4px;
+}
+
+.card-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.card-instruction {
+  font-family: var(--font-serif);
+  font-size: clamp(0.95rem, 2.8vw, 1.15rem);
+  color: #FFF3D6;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+#card1Recipient {
+  color: var(--gold-glow);
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.65);
+}
+
+.card-message {
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  font-style: italic;
+  color: var(--text-cream);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* ══════════════════════════════════════════════
+   SCENE 3: SKY LANTERN (UNOBSTRUCTED & REALISTIC)
+══════════════════════════════════════════════ */
+.lantern-scene-card {
+  bottom: 24px;
+  max-width: 440px;
+}
+
+.compact-lantern-card {
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: rgba(18, 6, 32, 0.82);
+}
+
+.compact-title {
+  font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-cream);
+  margin-bottom: 14px;
+}
+
+/* Primary Buttons */
+.primary-gold-btn {
+  background: linear-gradient(180deg, #F5B041 0%, var(--gold-warm) 100%);
+  border: none;
+  color: #261100;
+  font-family: var(--font-sans);
+  font-size: 0.98rem;
+  font-weight: 600;
+  padding: 13px 32px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 22px rgba(235, 168, 58, 0.5);
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+.primary-gold-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(235, 168, 58, 0.75);
+  background: linear-gradient(180deg, #FFC15E 0%, #EAA028 100%);
+}
+
+.arrow-icon {
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.primary-gold-btn:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
+.diya-action-btn, .lantern-release-btn {
+  background: rgba(255, 183, 3, 0.16);
+  border: 1px solid rgba(255, 183, 3, 0.5);
+  color: var(--gold-glow);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 22px rgba(255, 183, 3, 0.35);
+  transition: all 0.25s ease;
+}
+
+.diya-action-btn:hover, .lantern-release-btn:hover {
+  background: rgba(255, 183, 3, 0.3);
+  transform: scale(1.04);
+}
+
+.pulse-glow {
+  animation: pulseGlowAnim 2s infinite;
+}
+
+.secondary-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+  color: var(--gold-glow);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 11px 20px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondary-pill-btn:hover {
+  background: rgba(255, 183, 3, 0.2);
+}
+
+.card-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════════
+   STEP 2: RANGOLI & PROGRESS HUD
+══════════════════════════════════════════════ */
+.press-hold-ring-wrap {
+  position: relative;
+  width: 94px;
+  height: 94px;
+  margin: 16px auto 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 183, 3, 0.1);
+  box-shadow: 0 0 25px rgba(255, 183, 3, 0.28);
+  transition: transform 0.2s;
+}
+
+.press-hold-ring-wrap:hover {
+  transform: scale(1.06);
+}
+
+.press-hold-ring-wrap.pressing {
+  transform: scale(0.96);
+  box-shadow: 0 0 40px rgba(255, 183, 3, 0.7);
+}
+
+.progress-ring-svg {
+  position: absolute;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 6;
+}
+
+.ring-fill {
+  fill: transparent;
+  stroke: #F5B041;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 251.32;
+  stroke-dashoffset: 251.32;
+  transition: stroke-dashoffset 0.08s linear;
+}
+
+.ring-center-content {
+  position: relative;
+  z-index: 2;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold-glow);
+}
+
+.hold-helper-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+/* Minimal Floating Rangoli Painting HUD */
+.rangoli-painting-hud {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 28;
+  background: rgba(18, 6, 32, 0.92);
+  border: 1px solid var(--gold);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 183, 3, 0.4);
+  border-radius: var(--radius-capsule);
+  padding: 10px 22px;
+  display: flex;
+  align-items: center;
+  backdrop-filter: blur(14px);
+  animation: cardFadeIn 0.25s ease both;
+  pointer-events: none;
+}
+
+.hud-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-pulsing-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FF2A6D;
+  box-shadow: 0 0 10px #FF2A6D;
+  animation: pulseGlowAnim 1s infinite alternate;
+}
+
+.hud-status-text {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: #FFF3D6;
+  font-weight: 500;
+}
+
+.hud-progress-val {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--gold-glow);
+  font-weight: 700;
+}
+
+.wishes-list {
+  list-style: none;
+  text-align: left;
+  margin: 14px auto 20px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wishes-list li {
+  font-size: 0.92rem;
+  color: #F8F3EC;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wish-bullet { font-size: 0.75rem; }
+.bullet-pink   { color: #FF2A6D; text-shadow: 0 0 8px #FF2A6D; }
+.bullet-yellow { color: #FFD60A; text-shadow: 0 0 8px #FFD60A; }
+.bullet-cyan   { color: #05D9E8; text-shadow: 0 0 8px #05D9E8; }
+.bullet-gold   { color: #FF9F0A; text-shadow: 0 0 8px #FF9F0A; }
+
+/* ══════════════════════════════════════════════
+   STEP 4: ROOFTOP FIREWORKS & LAST GREETING (Positioned Gracefully in Upper Sky)
+══════════════════════════════════════════════ */
+.scene-card-container.rooftop-container {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: none;
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  display: none; /* STRICTLY HIDDEN UNTIL STEP 4 IS ACTIVE */
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 85px 20px 88px;
+  pointer-events: none;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.scene-card-container.rooftop-container.active-scene {
+  display: flex !important;
+}
+
+.scene-card-container.rooftop-container.hidden,
+.scene-card-container.hidden {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.scene-card-container.rooftop-container.card-faded {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+.rooftop-sky-text {
+  margin-top: 6px;
+  text-align: center;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.95);
+  pointer-events: none;
+  animation: cardFadeIn 0.8s ease both;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sky-festive-badge {
+  font-family: var(--font-royal);
+  font-size: 0.74rem;
+  letter-spacing: 3.5px;
+  color: var(--gold-glow);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(22, 10, 40, 0.75);
+  border: 1px solid rgba(255, 183, 3, 0.35);
+  border-radius: var(--radius-capsule);
+  padding: 4px 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.sky-happy-diwali {
+  font-family: var(--font-royal);
+  font-size: clamp(2.1rem, 6.0vw, 3.5rem);
+  font-weight: 700;
+  color: #FFF2D6;
+  text-shadow: 0 0 35px rgba(255, 183, 3, 0.9), 0 4px 24px rgba(0, 0, 0, 0.95);
+  line-height: 1.15;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+.sky-sender {
+  font-family: var(--font-calligraphy);
+  font-size: clamp(1.6rem, 4.4vw, 2.3rem);
+  color: #FFD54F;
+  text-shadow: 0 0 16px rgba(255, 213, 79, 0.85);
+  margin-top: 2px;
+}
+
+.sky-hint {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #FFE082;
+  text-shadow: 0 0 10px rgba(255, 183, 3, 0.75);
+  margin-top: 6px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 3px 14px;
+  border-radius: var(--radius-capsule);
+  display: inline-block;
+  border: 1px solid rgba(255, 183, 3, 0.25);
+  backdrop-filter: blur(6px);
+}
+  margin-top: 2px;
+}
+
+.rooftop-actions-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+  pointer-events: auto;
+  margin-bottom: 0;
+  animation: cardFadeIn 0.8s ease both;
+}
+}
+
+.rooftop-main-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.rooftop-main-buttons .primary-gold-btn {
+  width: 100%;
+  padding: 13px 24px;
+}
+
+.rooftop-sweets-btn {
+  width: 100%;
+  padding: 12px 24px;
+}
+
+.rooftop-sub-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.subtle-link-btn {
+  background: transparent;
+  border: none;
+  color: #F0E6D2;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 6px 10px;
+}
+
+.subtle-link-btn:hover {
+  color: var(--gold-glow);
+}
+
+.whatsapp-badge-btn {
+  background: #25D366;
+  border: none;
+  color: #FFF;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.whatsapp-badge-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.6);
+}
+
+.recipient-create-notice {
+  background: rgba(255, 183, 3, 0.08);
+  border: 1px dashed rgba(255, 183, 3, 0.35);
+  border-radius: 12px;
+  padding: 12px 16px;
+  width: 100%;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.recipient-create-notice .notice-text {
+  font-size: 0.78rem;
+  color: #D8C3A5;
+  margin-bottom: 6px;
+}
+
+.create-own-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold-glow);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-own-btn:hover {
+  background: var(--gold);
+  color: #261100;
+}
+
+/* ══════════════════════════════════════════════
+   BOTTOM CAPSULE NAVIGATION BAR
+══════════════════════════════════════════════ */
+.bottom-capsule-nav {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  background: rgba(30, 12, 50, 0.82);
+  border: 1px solid rgba(255, 183, 3, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  border-radius: var(--radius-capsule);
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(14px);
+}
+
+.capsule-arrow {
+  background: transparent;
+  border: none;
+  color: #FFF;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  opacity: 0.75;
+  transition: all 0.2s;
+}
+
+.capsule-arrow:hover {
+  opacity: 1;
+  color: var(--gold-glow);
+}
+
+.capsule-dashes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-pill {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dash-pill.active {
+  width: 28px;
+  background: var(--gold-warm);
+  box-shadow: 0 0 10px rgba(245, 176, 65, 0.85);
+}
+
+/* ══════════════════════════════════════════════
+   LUXURY ROYAL GREETING CARD MODAL (Scrollable & Vector Calligraphy)
+══════════════════════════════════════════════ */
+.greeting-card-dialog {
+  max-width: 520px;
+  max-height: 90vh;
+  overflow: hidden;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.greeting-card-wrapper {
+  border-radius: 20px;
+  padding: 18px 20px 18px;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 35px rgba(214, 151, 34, 0.35);
+  transition: background 0.4s ease, border-color 0.4s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+}
+
+.theme-crimson {
+  background: radial-gradient(circle at 50% 20%, #680C26 0%, #3B0413 60%, #1A0108 100%);
+  border: 2px solid #D4AF37;
+}
+
+.theme-sapphire {
+  background: radial-gradient(circle at 50% 20%, #0F3B5F 0%, #082035 60%, #020C17 100%);
+  border: 2px solid #05D9E8;
+}
+
+.theme-midnight {
+  background: radial-gradient(circle at 50% 20%, #29124E 0%, #17092F 60%, #090214 100%);
+  border: 2px solid #FFE082;
+}
+
+.card-ribbon-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.card-shubh-badge {
+  font-family: var(--font-royal);
+  font-size: 0.78rem;
+  letter-spacing: 3px;
+  color: var(--gold-glow);
+  text-shadow: 0 0 10px var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ribbon-star-svg {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+}
+
+.greeting-close-x {
+  color: var(--gold-glow);
+  font-size: 1.4rem;
+}
+
+.royal-greeting-card {
+  position: relative;
+  background: rgba(10, 3, 18, 0.6);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 16px;
+  padding: 24px 20px 32px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  flex: 1 1 auto;
+  max-height: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.card-end-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px auto 4px;
+  color: var(--gold);
+}
+
+.ornament-star {
+  font-size: 0.95rem;
+  color: var(--gold-glow);
+}
+
+.ornament-gem {
+  font-size: 1.15rem;
+  color: #FFA000;
+}
+
+/* Corner Motifs Vector */
+.card-corner-vector {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+}
+
+.card-corner-vector.top-left { top: 6px; left: 6px; }
+.card-corner-vector.top-right { top: 6px; right: 6px; }
+.card-corner-vector.bottom-left { bottom: 6px; left: 6px; }
+.card-corner-vector.bottom-right { bottom: 6px; right: 6px; }
+
+/* Wax Seal Diya Emblem Vector */
+.wax-seal-emblem {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin: -10px auto 14px;
+  background: radial-gradient(circle at 35% 35%, #D4AF37 0%, #8A5F12 70%, #573B0A 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 183, 3, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seal-diya-vector {
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 4px #FFF);
+}
+
+.greeting-salutation-script {
+  font-family: var(--font-calligraphy);
+  font-size: clamp(2rem, 5vw, 2.6rem);
+  color: var(--gold-glow);
+  line-height: 1;
+}
+
+.greeting-recipient-calligraphy {
+  font-family: var(--font-calligraphy);
+  font-size: clamp(2.8rem, 7vw, 3.8rem);
+  font-weight: 400;
+  color: #FFFFFF;
+  text-shadow: 0 0 25px rgba(255, 224, 130, 0.8);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.golden-separator-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0 16px;
+  color: var(--gold);
+}
+
+.sep-star-svg {
+  width: 14px;
+  height: 14px;
+  color: var(--gold);
+}
+
+.sep-diya-svg {
+  width: 24px;
+  height: 24px;
+}
+
+.golden-separator-line::before, .golden-separator-line::after {
+  content: '';
+  height: 1px;
+  width: 45px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.greeting-message-text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.02rem, 2.7vw, 1.18rem);
+  font-style: italic;
+  color: #FFF3D6;
+  line-height: 1.65;
+  margin-bottom: 20px;
+  padding: 0 8px;
+}
+
+/* Auspicious Blessings Grid */
+.auspicious-blessings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.blessing-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 3, 0.22);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.blessing-vector {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.blessing-desc {
+  display: flex;
+  flex-direction: column;
+}
+
+.b-title {
+  font-size: 0.8rem;
+  color: #FFF;
+  font-weight: 600;
+}
+
+.b-sub {
+  font-size: 0.68rem;
+  color: #D8C3A5;
+}
+
+.greeting-signature-block {
+  margin-top: 18px;
+}
+
+.signature-intro {
+  font-size: 0.85rem;
+  color: #D6C2A5;
+}
+
+.signature-name-calligraphy {
+  font-family: var(--font-script);
+  font-size: clamp(1.7rem, 4.5vw, 2.3rem);
+  color: #FFD54F;
+  text-shadow: 0 0 12px rgba(255, 213, 79, 0.5);
+}
+
+.greeting-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 183, 3, 0.25);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card-theme-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-label {
+  font-size: 0.78rem;
+  color: #CCC;
+}
+
+.theme-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.theme-dot:hover {
+  transform: scale(1.15);
+}
+
+.theme-dot.active {
+  border-color: #FFF;
+  box-shadow: 0 0 8px var(--gold);
+}
+
+.theme-dot.crimson { background: #880E4F; }
+.theme-dot.sapphire { background: #0288D1; }
+.theme-dot.midnight { background: #512DA8; }
+
+/* ══════════════════════════════════════════════
+   REALISTIC SWEET BOX MODAL (Scrollable & Handcrafted Vectors)
+══════════════════════════════════════════════ */
+.sweets-dialog {
+  max-width: 500px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sweets-body {
+  padding: 18px 22px 28px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  overscroll-behavior: contain;
+}
+
+.sweets-intro {
+  font-size: 0.88rem;
+  color: #D8C3A5;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.sweets-realistic-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.sweet-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 3, 0.25);
+  border-radius: 14px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.sweet-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold);
+}
+
+.sweet-realistic-render {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+
+.sweet-card:hover .sweet-realistic-render {
+  transform: scale(1.1) rotate(2deg);
+}
+
+/* 1. Kaju Katli (Cashew diamond with silver vark shimmer) */
+.kaju-katli-piece {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #F3EDE3 0%, #D8CFC2 70%, #C4B9A8 100%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.silver-vark-shimmer {
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 60%;
+  height: 60%;
+  background: linear-gradient(45deg, rgba(255,255,255,0.85) 0%, rgba(200,210,225,0.7) 50%, transparent 100%);
+  clip-path: polygon(30% 0%, 100% 40%, 70% 100%, 0% 60%);
+  filter: drop-shadow(0 0 2px #FFF);
+}
+
+/* 2. Motichoor Ladoo (Golden pearl sphere with pistachio flake) */
+.motichoor-ladoo-piece {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFD54F 0%, #FF9800 55%, #E65100 100%);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 235, 59, 0.6);
+  position: relative;
+}
+
+.ladoo-pistachio-flake {
+  position: absolute;
+  top: 25%;
+  left: 45%;
+  width: 10px;
+  height: 6px;
+  background: #4CAF50;
+  border-radius: 50% 50% 20% 20%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* 3. Gulab Jamun (Caramelized brown dumpling with syrup gloss) */
+.gulab-jamun-piece {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #8D4004 0%, #4A1E00 70%, #290F00 100%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.jamun-glaze-shimmer {
+  position: absolute;
+  top: 18%;
+  left: 25%;
+  width: 16px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  filter: blur(1px);
+}
+
+/* 4. Kesar Peda (Saffron mawa round with almond slice) */
+.kesar-peda-piece {
+  width: 52px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #FFF176 0%, #FBC02D 60%, #F57F17 100%);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.almond-slice-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 9px;
+  background: #FFF8E1;
+  border: 1px solid #8D6E63;
+  border-radius: 50%;
+}
+
+.sweet-name {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gold-glow);
+  margin-bottom: 2px;
+}
+
+.sweet-desc {
+  font-size: 0.72rem;
+  color: #D8C3A5;
+  line-height: 1.35;
+}
+
+.taste-pill {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--gold-glow);
+  background: rgba(255, 183, 3, 0.16);
+  border: 1px solid rgba(255, 183, 3, 0.35);
+  border-radius: 999px;
+  padding: 3px 10px;
+  transition: all 0.2s ease;
+}
+
+.sweet-card:hover .taste-pill {
+  background: var(--gold);
+  color: #261100;
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.6);
+}
+
+.sweet-blessing-box {
+  background: rgba(255, 183, 3, 0.1);
+  border: 1px dashed rgba(255, 183, 3, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.blessing-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.88rem;
+  color: var(--gold-glow);
+}
+
+/* ══════════════════════════════════════════════
+   PERSONALIZE & WHATSAPP MODAL
+══════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(5, 1, 14, 0.85);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-dialog {
+  width: 100%;
+  max-width: 480px;
+  background: #140526;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 183, 3, 0.22);
+  overflow: hidden;
+  animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  background: rgba(255, 183, 3, 0.08);
+  border-bottom: 1px solid rgba(255, 183, 3, 0.2);
+}
+
+.modal-header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title {
+  font-family: var(--font-royal);
+  font-size: 1.05rem;
+  color: var(--gold-glow);
+  letter-spacing: 0.5px;
+}
+
+.modal-close-x {
+  background: transparent;
+  border: none;
+  color: #AAA;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal-close-x:hover {
+  color: #FFF;
+}
+
+.modal-body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.modal-subtext {
+  font-size: 0.82rem;
+  color: #D8C3A5;
+  line-height: 1.45;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.78rem;
+  color: #D6C7B2;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.form-group input, .form-group textarea, .styled-select {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 183, 3, 0.28);
+  border-radius: 10px;
+  color: #FFF;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.styled-select option {
+  background: #1A0A30;
+  color: #FFF;
+}
+
+.form-group textarea {
+  font-family: var(--font-serif);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.form-group input:focus, .form-group textarea:focus, .styled-select:focus {
+  border-color: var(--gold);
+}
+
+/* ══════════════════════════════════════════════
+   SAMPLE NOTES PICKER & TABS (Hindi, Hinglish, English)
+══════════════════════════════════════════════ */
+.notes-picker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 183, 3, 0.15);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.notes-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.notes-main-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notes-main-label > span:first-child {
+  font-weight: 600;
+  color: #FFE082;
+  font-size: 0.85rem;
+}
+
+.notes-sub-hint {
+  font-size: 0.70rem;
+  color: #BBA78A;
+  font-weight: 400;
+}
+
+.shuffle-note-btn {
+  background: rgba(255, 183, 3, 0.12);
+  border: 1px solid rgba(255, 183, 3, 0.35);
+  border-radius: var(--radius-capsule);
+  padding: 5px 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--gold-glow);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.shuffle-note-btn:hover {
+  background: rgba(255, 183, 3, 0.28);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 183, 3, 0.25);
+}
+
+.shuffle-icon {
+  width: 13px;
+  height: 13px;
+  stroke: var(--gold);
+}
+
+.note-lang-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 183, 3, 0.14);
+}
+
+.lang-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: #D6C7B2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.lang-tab-btn:hover {
+  color: #FFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lang-tab-btn.active {
+  background: linear-gradient(135deg, rgba(255, 183, 3, 0.32), rgba(212, 175, 55, 0.18));
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  color: #FFF3D6;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.sample-notes-carousel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  max-height: 155px;
+  overflow-y: auto;
+  padding: 4px 2px;
+}
+
+.sample-notes-carousel::-webkit-scrollbar {
+  width: 5px;
+}
+.sample-notes-carousel::-webkit-scrollbar-thumb {
+  background: rgba(255, 183, 3, 0.3);
+  border-radius: 4px;
+}
+
+.sample-note-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 183, 3, 0.2);
+  border-radius: 9px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sample-note-card:hover {
+  background: rgba(255, 183, 3, 0.15);
+  border-color: rgba(255, 183, 3, 0.5);
+  transform: translateY(-1px);
+}
+
+.sample-note-card.active {
+  background: rgba(255, 183, 3, 0.22);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.28);
+}
+
+.sample-note-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.sample-note-title {
+  font-size: 0.77rem;
+  font-weight: 600;
+  color: var(--gold-glow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sample-note-tag {
+  font-size: 0.63rem;
+  color: #B8A68B;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.sample-note-preview {
+  font-size: 0.72rem;
+  color: #E6D8C3;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.textarea-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.char-count {
+  font-size: 0.72rem;
+  color: #B8A68B;
+}
+
+.wish-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wish-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 183, 3, 0.25);
+  color: #E2D4BE;
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: var(--radius-capsule);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wish-chip:hover, .wish-chip.active {
+  background: rgba(255, 183, 3, 0.25);
+  border-color: var(--gold);
+  color: var(--gold-glow);
+  font-weight: 600;
+}
+
+.whatsapp-box {
+  background: rgba(37, 211, 102, 0.08);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.whatsapp-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #25D366;
+}
+
+.copy-url-row {
+  display: flex;
+  gap: 8px;
+}
+
+.copy-url-row input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 183, 3, 0.25);
+  border-radius: 8px;
+  color: #CCC;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+.copy-btn {
+  background: rgba(255, 183, 3, 0.2);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+  color: var(--gold-glow);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: var(--gold);
+  color: #220A00;
+}
+
+.link-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.open-tab-btn {
+  background: linear-gradient(135deg, #1E88E5 0%, #1565C0 100%);
+  border: none;
+  color: #FFF;
+  font-weight: 600;
+  font-size: 0.86rem;
+  padding: 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 136, 229, 0.4);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.open-tab-btn:hover {
+  background: #1976D2;
+  transform: translateY(-1px);
+}
+
+.whatsapp-direct-btn {
+  background: #25D366;
+  border: none;
+  color: #FFF;
+  font-weight: 700;
+  font-size: 0.86rem;
+  padding: 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whatsapp-direct-btn:hover {
+  background: #20BA5A;
+  transform: translateY(-1px);
+}
+
+.modal-footer {
+  flex-shrink: 0;
+  padding: 16px 22px 18px;
+  background: rgba(14, 4, 26, 0.98);
+  border-top: 1px solid rgba(255, 183, 3, 0.22);
+}
+
+.modal-footer .primary-gold-btn {
+  width: 100%;
+}
+
+/* Toast Popup */
+.toast-popup {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  background: #EBA83A;
+  color: #261100;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: var(--radius-capsule);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  animation: toastAnim 2.2s ease forwards;
+}
+
+/* Animations */
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlowAnim {
+  0%, 100% { box-shadow: 0 0 16px rgba(255, 183, 3, 0.35); }
+  50% { box-shadow: 0 0 32px rgba(255, 183, 3, 0.75), 0 0 48px rgba(251, 133, 0, 0.4); }
+}
+
+@keyframes toastAnim {
+  0% { opacity: 0; transform: translate(-50%, 15px); }
+  15% { opacity: 1; transform: translate(-50%, 0); }
+  80% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .top-nav-bar { padding: 12px 14px; }
+  .gali-brand-title { display: none; }
+  .music-pill-wrap .sound-text { display: none; }
+  .form-row-2 { grid-template-columns: 1fr; }
+  .link-actions-row { grid-template-columns: 1fr; }
+  .scene-card-container { bottom: 75px; width: 92%; }
+  .lantern-scene-card { bottom: 20px; }
+  .gali-card { padding: 18px 20px; }
+  .sweets-realistic-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .floating-gali-banner { bottom: 72px; padding: 8px 16px; }
+  .auspicious-blessings-grid { grid-template-columns: 1fr; }
+}
