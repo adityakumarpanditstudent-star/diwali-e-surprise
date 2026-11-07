@@ -203,14 +203,25 @@
     if (!bgAudio) return;
 
     bgAudio.volume = 0.65;
+    bgAudio.loop = true;
 
-    // Synchronize UI whenever audio starts playing or pauses
-    bgAudio.addEventListener('play', () => updateSoundIconState(true));
-    bgAudio.addEventListener('pause', () => updateSoundIconState(!bgAudio.paused));
+    // Ensure continuous non-stop playback when track loops
+    bgAudio.addEventListener('ended', () => {
+      bgAudio.currentTime = 0;
+      bgAudio.play().catch(() => {});
+    });
 
-    // Initialize track with autoplay enabled
+    // Automatically resume continuous playback if user switches back to this tab
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && state.soundEnabled && bgAudio && bgAudio.paused) {
+        bgAudio.play().catch(() => {});
+      }
+    });
+
+    // Initialize default track with autoplay enabled & uncrossed active icon
     setAudioTrack(state.activeMusicTrack, true);
     updateMusicDropdownUI();
+    updateSoundIconState(true);
 
     // Directly attempt autoplay on page load
     attemptAutoplay();
@@ -223,8 +234,8 @@
       playPromise.then(() => {
         updateSoundIconState(true);
       }).catch(() => {
-        // Browser requires a user touch/gesture: will auto-unlock on ANY initial touch/drag/scroll
-        updateSoundIconState(false);
+        // Keep active sound icon (never crossed by default) - streams on first touch/interaction
+        updateSoundIconState(true);
       });
     }
   }
@@ -2871,7 +2882,7 @@
     setupSweetsModal();
     setupPersonalizeModal();
 
-    const unlockEvents = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel'];
+    const unlockEvents = ['pointerdown', 'touchstart', 'touchend', 'click', 'keydown', 'scroll', 'wheel', 'mousemove', 'pointermove'];
     const onFirstUserGesture = () => {
       startAudioOnGesture();
       unlockEvents.forEach(evt => window.removeEventListener(evt, onFirstUserGesture));
